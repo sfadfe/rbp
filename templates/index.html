@@ -7,14 +7,11 @@
   <link rel="stylesheet" href="/static/style.css" />
 </head>
 <body>
-  <!-- 경고 메시지 -->
   <div class="alert1" id="aaaa" style="display:none;"></div>
-
-  <!-- 실시간 거리 표시 -->
   <h1 id="abdd"> 현재 거리: -- cm</h1>
 
   <script>
-    const ENDPOINT  = '/sensor';  // 상대경로로 변경
+    const ENDPOINT  = '/sensor';
     const THRESHOLD = 10;
     let alerted = false;
 
@@ -28,11 +25,10 @@
         const dist = obj.distance;
         const err  = obj.error;
 
-        // 항상 숫자 혹은 null/음수 그대로 표기
+
         displayEl.textContent = 
           `현재 거리: ${dist !== null ? dist : dist} cm`;
 
-        // 에러 메시드만 따로 노출하고 싶다면
         if (err) {
           alertEl.textContent = `${err}`;
           alertEl.style.display = 'block';
@@ -53,8 +49,6 @@
         displayEl.textContent = '연결 실패';
       }
     }
-
-    // 페이지 로드 직후 & 1초 주기 실행
     checkDistance();
     setInterval(checkDistance, 1000);
   </script>
