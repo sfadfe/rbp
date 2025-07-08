@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>거리 감지 시스템</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <!-- 경고 메시지 -->
+  <div class="alert1" id="aaaa" style="display:none;"></div>
+
+  <!-- 실시간 거리 표시 -->
+  <h1 id="abdd"> 현재 거리: -- cm</h1>
+
+  <script>
+    const ENDPOINT  = '/sensor';  // 상대경로로 변경
+    const THRESHOLD = 10;
+    let alerted = false;
+
+    const displayEl = document.getElementById('abdd');
+    const alertEl   = document.getElementById('aaaa');
+
+    async function checkDistance() {
+      try {
+        const res  = await fetch(ENDPOINT);
+        const obj  = await res.json();
+        const dist = obj.distance;
+        const err  = obj.error;
+
+        // 항상 숫자 혹은 null/음수 그대로 표기
+        displayEl.textContent = 
+          `현재 거리: ${dist !== null ? dist : dist} cm`;
+
+        // 에러 메시드만 따로 노출하고 싶다면
+        if (err) {
+          alertEl.textContent = `${err}`;
+          alertEl.style.display = 'block';
+        } 
+        else if (dist <= THRESHOLD && !alerted) {
+          alertEl.textContent = 
+            `경고! 거리가 ${dist} cm로 기준(${THRESHOLD}cm) 이하입니다.`;
+          alertEl.style.display = 'block';
+          alerted = true;
+        }
+        else if (dist > THRESHOLD) {
+          alertEl.style.display = 'none';
+          alerted = false;
+        }
+
+      } catch (e) {
+        console.error('데이터 수신 오류:', e);
+        displayEl.textContent = '연결 실패';
+      }
+    }
+
+    // 페이지 로드 직후 & 1초 주기 실행
+    checkDistance();
+    setInterval(checkDistance, 1000);
+  </script>
+</body>
+</html>
